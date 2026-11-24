@@ -1,6 +1,6 @@
 # VSG: Visual-State Graph Memory for Streaming Video Understanding
 
-[Project page](https://<user>.github.io/vsg/) · Paper (soon)
+[Project page](https://ailarmhz.github.io/VSG/) · Paper (soon)
 
 VSG is a training-free memory for streaming video. A frozen VLM, the *writer*, describes the stream as it arrives and
 builds a graph of persistent objects, their relations and a timestamped event log. Repeated mentions of an object

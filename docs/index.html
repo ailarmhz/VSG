@@ -140,8 +140,7 @@ footer{padding:40px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
       <a class="btn soon" aria-disabled="true"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i>Paper <span class="tag">soon</span></a>
       <a class="btn soon" aria-disabled="true"><i class="ai ai-arxiv" aria-hidden="true"></i>arXiv <span class="tag">soon</span></a>
       <a class="btn" href="#video"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>Video</a>
-      <!-- Set href to the repository URL. -->
-      <a class="btn" href="#code"><i class="fa-brands fa-github" aria-hidden="true"></i>Code</a>
+      <a class="btn" href="https://github.com/ailarmhz/VSG" target="_blank" rel="noopener"><i class="fa-brands fa-github" aria-hidden="true"></i>Code</a>
     </div>
   </div>
 
@@ -311,7 +310,7 @@ footer{padding:40px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
     <h2>Code</h2>
     <div class="prose"><p>The implementation follows the paper: a writer that builds the memory once per video, and a reader that answers any number of questions from it. Writer and reader are frozen Hugging Face models; nothing is trained.</p></div>
     <pre><span class="c"># install</span>
-git clone &lt;repository-url&gt; vsg &amp;&amp; cd vsg
+git clone https://github.com/ailarmhz/VSG.git &amp;&amp; cd VSG
 pip install -r requirements.txt
 
 <span class="c"># 1. write the memory of a video (question-agnostic, once per video)</span>
