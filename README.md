@@ -41,22 +41,6 @@ Proactive instructions use a separate memory per instruction (`vsg/proactive.py`
 the instruction in its prompt, and the reader answers yes or no each second until the first yes, which triggers the
 response.
 
-## Settings
-
-| | Reactive | Proactive |
-|---|---|---|
-| Write interval | 5 s (videos ≤ 300 s), else 10 s | 1 s |
-| Writer input | last 5 frames at 1 fps | current frame |
-| Descriptions per write | ≤ 3, refreshed after ≥ 10 s | ≤ 3, ranked by relevance to the instruction |
-| Match threshold θ | 0.55 | 0.55 |
-| Nodes read | 8 (CLIP text ranking) | 4 |
-| Event lines | all if ≤ 60, else 57 most relevant + 3 latest | – |
-| Crops / recent frames / max frames | 2 / 8 / 18 | 2 / 16 / 16 |
-| Budget B | 3,510 tokens | not enforced |
-
-The budget covers the memory text, crops and frames. Frames are allocated last and removed, oldest key frames first,
-until the input counted by the reader's tokenizer fits.
-
 ## Layout
 
 ```
