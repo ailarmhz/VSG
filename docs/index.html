@@ -4,74 +4,62 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VSG: Visual-State Graph Memory for Streaming Video Understanding</title>
-<meta name="description" content="A training-free memory for streaming video that stores the state of a stream: persistent object nodes with timestamped state histories, their relations, and an event log.">
+<meta name="description" content="A training-free memory for streaming video that stores persistent objects, their timestamped state histories, their relations and an event log.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cline x1='9' y1='11' x2='22' y2='9' stroke='%23999' stroke-width='2'/%3E%3Cline x1='9' y1='11' x2='16' y2='23' stroke='%23999' stroke-width='2'/%3E%3Ccircle cx='9' cy='11' r='5' fill='%233f78d0'/%3E%3Ccircle cx='22' cy='9' r='5' fill='%232e9e5b'/%3E%3Ccircle cx='16' cy='23' r='5' fill='%23d9a21b'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<script>
-  window.MathJax = {tex: {inlineMath: [['\\(', '\\)']]}, svg: {fontCache: 'global'}};
-</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']]}, svg: {fontCache: 'global'}};</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" async></script>
 <style>
 :root{
   color-scheme:light;
-  --bg:#FFFFFF;--surface-2:#F4F4F1;--ink:#17181C;--ink-2:#45474F;--ink-3:#73757E;--rule:#E3E3DE;
-  --accent:#B7830F;--accent-soft:#FBF3DF;
-  --vsg:#D9A21B;--new:#2E9E5B;--merged:#3F78D0;--idle:#B9B9B5;--recent:#3F6FB6;--wrong:#C0392B;
-  --sans:"Google Sans","Noto Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bg:#FFFFFF;--paper:#FBFAF7;--surface-2:#F2F1EC;--ink:#17181C;--ink-2:#45474F;--ink-3:#74767E;--rule:#E4E2DB;
+  --accent:#B7830F;--vsg:#D9A21B;--new:#2E9E5B;--merged:#3F78D0;--idle:#B9B9B5;--recent:#3F6FB6;--wrong:#C0392B;--ok:#2E8B4F;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Noto Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"Noto Sans Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
 a{color:var(--merged);text-underline-offset:3px}
-img,video{max-width:100%;height:auto;display:block}
-.wrap{max-width:960px;margin:0 auto;padding-inline:clamp(16px,4vw,32px)}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:900px;margin:0 auto;padding-inline:clamp(16px,4vw,32px)}
 .wide{max-width:1200px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
 
 /* hero */
-.hero{padding-block:clamp(40px,7vw,72px) 8px;text-align:center}
-h1{font-weight:700;letter-spacing:-.015em;margin:0;line-height:1.15;font-size:clamp(30px,4.3vw,44px);text-wrap:balance}
-h1 .name{color:var(--accent)}
-.authors{margin-top:22px;font-size:18.5px;display:flex;flex-wrap:wrap;justify-content:center;column-gap:18px;row-gap:2px}
-.authors span{white-space:nowrap}
-.authors a{color:var(--merged);text-decoration:none}
-.authors sup,.affil sup{font-size:.68em;color:var(--accent);font-weight:600;margin-left:1px}
-.affil{margin-top:6px;font-size:15.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;justify-content:center;column-gap:20px}
-.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px}
-.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:16px;text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg)}
-.btn:hover{opacity:.88}
-.btn i{font-size:17px;width:18px;text-align:center}
-.btn.soon{background:transparent;color:var(--ink-3);border:1px dashed var(--rule);cursor:default}
-.btn .tag{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.hero{padding-block:clamp(44px,7vw,76px) 0;text-align:center}
+h1{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0 auto;line-height:1.14;font-size:clamp(30px,4.4vw,46px);max-width:900px;text-wrap:balance}
+h1 .name{color:var(--accent);font-weight:700}
+.authors{margin-top:20px;font-size:18px;color:var(--ink-2)}
+.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:15.5px;text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:#fff}
+.btn:hover{opacity:.86}
+.btn i{font-size:17px}
+.btn.soon{background:transparent;color:var(--ink-3);border:1px dashed #CFCDC5;cursor:default}
+.btn .tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 
 /* teaser */
-.teaser{margin-top:36px;border:1px solid var(--rule);border-radius:16px;padding:14px;background:#fff}
-.teaser video{width:100%;border-radius:10px;background:#000}
-.caption{font-size:15.5px;color:var(--ink-2);margin:12px 4px 0;line-height:1.5;text-align:left}
-.caption b{color:var(--ink)}
-
-
-/* animated teaser */
-.t-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.25fr) minmax(0,.7fr);gap:22px;text-align:left}
+.teaser{margin-top:40px;border:1px solid var(--rule);border-radius:18px;padding:20px 22px 16px;background:var(--paper);text-align:left}
+.t-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.25fr) minmax(0,.7fr);gap:24px}
 .pane,.side{min-width:0}
 .pane-head{display:flex;flex-direction:column;gap:1px;margin-bottom:8px}
-.pane-head b{font-size:16px}
+.pane-head b{font-size:15.5px}
 .pane-head span{font-size:13.5px;color:var(--ink-3);line-height:1.35}
 .frame{position:relative;border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9}
 .frame img{width:100%;height:100%;object-fit:cover}
-.badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.65);color:#fff;font-weight:700;font-size:14px;padding:2px 8px;border-radius:6px}
-.badge.write{left:auto;right:8px;background:var(--merged)}
+.badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.62);color:#fff;font-weight:700;font-size:13.5px;padding:2px 8px;border-radius:6px;font-family:var(--mono)}
+.badge.write{left:auto;right:8px;background:var(--merged);font-family:var(--sans)}
 .qcard{position:absolute;inset:auto 8px 8px 8px;background:rgba(255,255,255,.95);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;font-size:14px;line-height:1.35}
-.qcard em{font-style:normal;font-weight:700;color:#2E8B4F;margin-top:2px}
+.qcard em{font-style:normal;font-weight:700;color:var(--ok);margin-top:2px}
 .log{margin-top:10px;display:flex;flex-direction:column;gap:5px;font-size:13.5px;line-height:1.35;height:118px;overflow:hidden}
 .log .ln{color:var(--ink-2);transition:opacity .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .log .ln code{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-right:6px}
 .log .ln.now{color:var(--ink);font-weight:600}
-.log .ln.ev{color:#2E8B4F;font-weight:600}.log .ln.dis{color:var(--wrong)}
+.log .ln.ev{color:var(--ok);font-weight:600}.log .ln.dis{color:var(--wrong)}
 .log .ln.dim{opacity:.35}
 #tgraph{width:100%;height:auto;display:block;font-family:var(--sans)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-2);margin-top:4px}
@@ -87,94 +75,61 @@ h1 .name{color:var(--accent)}
 .iconbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;flex:none}
 .tline{flex:1;min-width:0}
 .tbar{position:relative;height:16px;margin-top:10px;border-radius:99px;background:var(--surface-2);cursor:pointer;touch-action:none}
-.tfill{position:absolute;left:0;top:0;bottom:0;background:#D6D6D1;border-radius:99px}
+.tfill{position:absolute;left:0;top:0;bottom:0;background:#D8D6CF;border-radius:99px}
 .tticks i{position:absolute;top:3px;width:1.5px;height:10px;background:#9A9A96}
-.tticks i.ev{background:#2E8B4F;width:4px}.tticks i.dis{background:var(--wrong);width:4px}
+.tticks i.ev{background:var(--ok);width:4px}.tticks i.dis{background:var(--wrong);width:4px}
 .tknob{position:absolute;top:-4px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .tbar .tq{position:absolute;right:-12px;top:-5px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
 .tlabels{position:relative;height:20px;font-size:12.5px;color:var(--ink-3);margin-top:6px}
 .tlabels span{position:absolute;white-space:nowrap}
 .tlabels span:nth-child(1){left:0}
 .tlabels span.d{left:41.6%;transform:translateX(-50%);color:var(--wrong)}
-.tlabels span.e{left:80.7%;transform:translateX(-50%);color:#2E8B4F}
+.tlabels span.e{left:80.7%;transform:translateX(-50%);color:var(--ok)}
 .tlabels span:nth-child(4){right:0}
+
+/* sections */
+section{padding-block:56px 0}
+h2{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.005em;margin:0 0 18px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+h3{font-family:var(--serif);font-size:21px;font-weight:600;margin:34px 0 6px}
+p{margin:0 0 14px}
+.abstract{text-align:justify;hyphens:auto}
+.figure{margin:6px 0 0}
+.figure img{width:100%;border-radius:6px}
+.figure figcaption{font-size:15px;color:var(--ink-2);margin-top:12px;line-height:1.5}
+.figure figcaption b{color:var(--ink)}
+.eq{overflow-x:auto;max-width:100%;padding:4px 0 10px;font-size:16px}
+.muted{color:var(--ink-2)}
+
+/* budget */
+.budget{margin-top:12px;padding:18px 20px;border-radius:14px;background:var(--paper);border:1px solid var(--rule)}
+.ctrl{display:grid;grid-template-columns:190px minmax(0,1fr) 64px;align-items:center;gap:12px;font-size:15px;margin-bottom:6px}
+.ctrl output{font-family:var(--mono);text-align:right;font-size:14px}
+.ctrl input{width:100%;accent-color:var(--vsg)}
+.bar{display:flex;height:30px;border-radius:7px;overflow:hidden;background:var(--surface-2);margin-top:12px;gap:2px}
+.bar div{height:100%;transition:width .25s ease}
+.bar .t{background:var(--vsg)}.bar .c{background:#E6C46A}.bar .f{background:var(--recent)}
+.key{display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--ink-2);margin-top:8px}
+.key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.readout{margin-top:10px;font-size:15.5px}
+.readout b{font-family:var(--mono);font-weight:500}
+
+/* code */
+pre{background:#16171B;color:#ECECEA;border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13.8px;line-height:1.6;margin:12px 0 0}
+pre .c{color:#8C8F98}
+pre.tree{background:var(--paper);color:var(--ink);border:1px solid var(--rule)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.bib{position:relative}
+.copy{position:absolute;top:10px;right:10px;border:1px solid #3a3c44;background:#24262c;color:#ddd;border-radius:8px;font-size:13px;padding:4px 10px;cursor:pointer}
+footer{padding:56px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
+
 @media (max-width:900px){
   .t-grid{grid-template-columns:minmax(0,1fr)}
   .teaser{padding:12px}
   .side{border-left:none;padding-left:0}
   .tlabels span.e{display:none}
-}
-
-/* sections */
-section{padding-block:44px 8px}
-h2{font-size:28px;font-weight:700;letter-spacing:-.01em;margin:0 0 16px;text-align:center}
-h3{font-size:20px;font-weight:600;margin:28px 0 8px}
-.prose p{margin:0 0 14px}
-.abstract{text-align:justify;hyphens:auto}
-
-/* method figure */
-.fig{border:1px solid var(--rule);border-radius:16px;padding:18px;background:#fff}
-.fig svg{width:100%;height:auto;display:block}
-.fig svg text{font-family:var(--sans)}
-
-/* steps */
-.steps{display:grid;gap:14px;margin-top:22px}
-.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;border:1px solid var(--rule);border-radius:14px;padding:16px 18px}
-.step .no{width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;display:grid;place-items:center;font-size:16px}
-.step h4{margin:2px 0 4px;font-size:18px}
-.step p{margin:0 0 6px;color:var(--ink-2);font-size:16.5px}
-.eq{overflow-x:auto;max-width:100%;padding:6px 0;font-size:16px}
-
-/* budget explorer */
-.budget{border:1px solid var(--rule);border-radius:16px;padding:20px;margin-top:8px}
-.ctrl{display:grid;grid-template-columns:200px 1fr 70px;align-items:center;gap:12px;font-size:15.5px;margin-bottom:8px}
-.ctrl output{font-family:var(--mono);text-align:right;font-size:14.5px}
-.ctrl input{width:100%;accent-color:var(--vsg)}
-.bar{display:flex;height:34px;border-radius:8px;overflow:hidden;background:var(--surface-2);margin-top:14px;gap:2px}
-.bar div{height:100%;transition:width .25s ease}
-.bar .t{background:var(--vsg)}.bar .c{background:#E6C46A}.bar .f{background:var(--recent)}
-.key{display:flex;flex-wrap:wrap;gap:16px;font-size:14.5px;color:var(--ink-2);margin-top:10px}
-.key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.readout{margin-top:12px;font-size:16px}
-.readout b{font-family:var(--mono);font-weight:500}
-.frames{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
-.frames span{width:22px;height:14px;border-radius:3px;background:var(--recent)}
-.frames span.key{background:var(--ink-3)}
-.note{font-size:14px;color:var(--ink-3);margin-top:10px}
-
-/* example */
-.ex{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:10px}
-.stat{border:1px solid var(--rule);border-radius:12px;padding:14px;text-align:center}
-.stat b{display:block;font-size:30px;line-height:1.1}
-.stat span{font-size:14px;color:var(--ink-2)}
-.timeline{margin-top:18px;border:1px solid var(--rule);border-radius:14px;padding:16px 18px}
-.tl{position:relative;height:56px;margin:8px 8px 0}
-.tl .line{position:absolute;left:0;right:0;top:26px;height:6px;border-radius:3px;background:var(--surface-2)}
-.tl .tick{position:absolute;top:18px;width:2px;height:22px;background:#9a9a96}
-.tl .tick.ev{background:var(--new);width:4px}.tl .tick.dis{background:var(--wrong);width:4px}
-.tl .q{position:absolute;top:14px;width:30px;height:30px;margin-left:-15px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;display:grid;place-items:center;font-size:15px}
-.tl .win{position:absolute;top:20px;height:18px;background:rgba(63,111,182,.25)}
-.lines{display:grid;gap:6px;margin-top:10px;font-size:15.5px}
-.lines .ev{color:var(--new);font-weight:600}.lines .dis{color:var(--wrong)}
-.lines code{font-family:var(--mono);font-size:14px;color:var(--ink-3);margin-right:8px}
-
-/* code */
-pre{background:#16171B;color:#ECECEA;border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.55;margin:10px 0 0}
-pre .c{color:#8C8F98}
-.tree{background:var(--surface-2);color:var(--ink)}
-.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
-
-/* bibtex */
-.bib{position:relative}
-.copy{position:absolute;top:10px;right:10px;border:1px solid #3a3c44;background:#24262c;color:#ddd;border-radius:8px;font-size:13px;padding:4px 10px;cursor:pointer}
-footer{padding:40px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
-
-@media (max-width:760px){
-  .ex{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cols{grid-template-columns:minmax(0,1fr)}
-  .ctrl{grid-template-columns:1fr 60px}
+  .ctrl{grid-template-columns:minmax(0,1fr) 56px}
   .ctrl label{grid-column:1/-1}
-  .step{grid-template-columns:minmax(0,1fr)}
 }
 </style>
 </head>
@@ -183,15 +138,10 @@ footer{padding:40px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
 <header class="hero">
   <div class="wrap">
     <h1><span class="name">VSG</span>: Visual-State Graph Memory for Streaming Video Understanding</h1>
-    <!-- Add the venue badge after acceptance. -->
-    <div class="authors">
-      <!-- Author list: kept anonymous while the paper is under review. -->
-      <span>Anonymous authors</span>
-    </div>
+    <!-- Author list and venue: add after review. -->
+    <div class="authors">Anonymous authors</div>
     <div class="buttons">
-      <a class="btn soon" aria-disabled="true"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i>Paper <span class="tag">soon</span></a>
       <a class="btn soon" aria-disabled="true"><i class="ai ai-arxiv" aria-hidden="true"></i>arXiv <span class="tag">soon</span></a>
-      <a class="btn" href="#video"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>Video</a>
       <a class="btn" href="https://github.com/ailarmhz/VSG" target="_blank" rel="noopener"><i class="fa-brands fa-github" aria-hidden="true"></i>Code</a>
     </div>
   </div>
@@ -200,7 +150,7 @@ footer{padding:40px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
     <div class="teaser" id="teaser" aria-label="The visual-state graph of one stream, write by write">
       <div class="t-grid">
         <div class="pane">
-          <div class="pane-head"><b>Video stream</b><span>Every 10 s the writer reads the last clip. No question is known.</span></div>
+          <div class="pane-head"><b>Video stream</b><span>The writer reads the last clip every 10 s, before any question exists.</span></div>
           <div class="frame">
             <img id="tframe" alt="Video frame at the current write" src="static/teaser/f010.jpg">
             <span class="badge" id="ttime">0:10</span>
@@ -242,202 +192,73 @@ footer{padding:40px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
 <section id="abstract">
   <div class="wrap">
     <h2>Abstract</h2>
-    <div class="prose abstract">
-      <p>In streaming video understanding, the evidence needed to answer a question may have already left the recent-frame window. Keeping all frames does not scale with video length, while dropping older frames limits the model's ability to reason about the past. We propose Visual-State Graph (VSG), a training-free memory that stores the state of a stream rather than the raw sequence of frames. VSG represents the stream as a graph of objects and their relations, together with a log of events, similar to a dynamically evolving scene graph. An object observed repeatedly is represented by one persistent node, with a timestamped history of how its state changes. To determine whether a newly mentioned object already exists in the graph, we compare the relations it takes part in with those of stored objects. We build this memory as the video arrives, before the questions are known. When a question arrives, we retrieve relevant objects and events alongside recent frames under a fixed input budget. Our evaluation spans four streaming-video benchmarks and seven open-source vision-language models ranging from 7B to 32B parameters. Under matched input budgets, VSG improves reasoning about the past while preserving real-time understanding.</p>
-    </div>
+    <p class="abstract">In streaming video understanding, the evidence needed to answer a question may have already left the recent-frame window. Keeping all frames does not scale with video length, while dropping older frames limits the model's ability to reason about the past. We propose Visual-State Graph (VSG), a training-free memory that stores the state of a stream rather than the raw sequence of frames. VSG represents the stream as a graph of objects and their relations, together with a log of events, similar to a dynamically evolving scene graph. An object observed repeatedly is represented by one persistent node, with a timestamped history of how its state changes. To determine whether a newly mentioned object already exists in the graph, we compare the relations it takes part in with those of stored objects. We build this memory as the video arrives, before the questions are known. When a question arrives, we retrieve relevant objects and events alongside recent frames under a fixed input budget. Our evaluation spans four streaming-video benchmarks and seven open-source vision-language models ranging from 7B to 32B parameters. Under matched input budgets, VSG improves reasoning about the past while preserving real-time understanding.</p>
   </div>
 </section>
 
 <section id="method">
   <div class="wrap">
     <h2>Method</h2>
-    <div class="fig">
-      <svg viewBox="0 0 900 330" role="img" aria-label="VSG pipeline: a frozen writer turns each clip into triplets, descriptions and a caption; relational consolidation keeps one node per object; at question time a frozen reader receives memory text, object crops and recent frames within a fixed budget.">
-        <defs>
-          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#73757E"/></marker>
-        </defs>
-        <!-- stream -->
-        <text x="18" y="26" font-size="15" font-weight="700" fill="#17181C">Video stream</text>
-        <g fill="#E9E9E4" stroke="#C9C9C4">
-          <rect x="18" y="44" width="92" height="52" rx="6"/><rect x="18" y="104" width="92" height="52" rx="6"/>
-          <rect x="18" y="164" width="92" height="52" rx="6"/><rect x="18" y="224" width="92" height="52" rx="6" fill="#DCE7F5" stroke="#3F6FB6"/>
-        </g>
-        <g font-size="12" fill="#45474F"><text x="26" y="62">0:10</text><text x="26" y="122">3:50</text><text x="26" y="182">5:30</text><text x="26" y="242">6:40</text></g>
-        <text x="18" y="300" font-size="12" fill="#73757E">no question yet</text>
-        <line x1="116" y1="160" x2="150" y2="160" stroke="#73757E" stroke-width="1.6" marker-end="url(#ar)"/>
-        <!-- writer -->
-        <rect x="154" y="104" width="104" height="112" rx="12" fill="#FBF3DF" stroke="#D9A21B" stroke-width="1.5"/>
-        <text x="206" y="146" font-size="15" font-weight="700" text-anchor="middle" fill="#17181C">Frozen</text>
-        <text x="206" y="166" font-size="15" font-weight="700" text-anchor="middle" fill="#17181C">writer</text>
-        <text x="206" y="188" font-size="12" text-anchor="middle" fill="#45474F">every Δ s</text>
-        <line x1="262" y1="160" x2="292" y2="160" stroke="#73757E" stroke-width="1.6" marker-end="url(#ar)"/>
-        <!-- outputs -->
-        <g font-size="13" fill="#17181C">
-          <rect x="296" y="86" width="168" height="40" rx="8" fill="#fff" stroke="#C9C9C4"/><text x="380" y="111" text-anchor="middle">triplets  G<tspan font-size="10" dy="3">k</tspan></text>
-          <rect x="296" y="140" width="168" height="40" rx="8" fill="#fff" stroke="#C9C9C4"/><text x="380" y="165" text-anchor="middle">object descriptions  D<tspan font-size="10" dy="3">k</tspan></text>
-          <rect x="296" y="194" width="168" height="40" rx="8" fill="#fff" stroke="#C9C9C4"/><text x="380" y="219" text-anchor="middle">caption  e<tspan font-size="10" dy="3">k</tspan></text>
-        </g>
-        <text x="380" y="262" font-size="12" text-anchor="middle" fill="#73757E">OWLv2 crop per described object</text>
-        <line x1="468" y1="106" x2="508" y2="106" stroke="#73757E" stroke-width="1.6" marker-end="url(#ar)"/>
-        <line x1="468" y1="160" x2="508" y2="140" stroke="#73757E" stroke-width="1.6" marker-end="url(#ar)"/>
-        <line x1="468" y1="214" x2="508" y2="250" stroke="#73757E" stroke-width="1.6" marker-end="url(#ar)"/>
-        <!-- memory -->
-        <rect x="512" y="40" width="190" height="270" rx="14" fill="#fff" stroke="#C9C9C4"/>
-        <text x="526" y="64" font-size="14" font-weight="700" fill="#17181C">Visual-state graph</text>
-        <line x1="558" y1="122" x2="650" y2="104" stroke="#3F78D0" stroke-width="2.4"/>
-        <line x1="558" y1="122" x2="612" y2="178" stroke="#B9B9B5" stroke-width="1.6"/>
-        <line x1="650" y1="104" x2="612" y2="178" stroke="#B9B9B5" stroke-width="1.6"/>
-        <circle cx="558" cy="122" r="17" fill="#fff" stroke="#3F78D0" stroke-width="4"/>
-        <circle cx="650" cy="104" r="17" fill="#fff" stroke="#3F78D0" stroke-width="4"/>
-        <circle cx="612" cy="178" r="17" fill="#fff" stroke="#2E9E5B" stroke-width="4"/>
-        <g font-size="11.5" fill="#17181C" font-weight="600" text-anchor="middle">
-          <text x="558" y="154">mechanic</text><text x="650" y="136">screwdriver ×14</text><text x="612" y="210">motorcycle</text>
-        </g>
-        <text x="604" y="106" font-size="11" fill="#3F78D0" text-anchor="middle">holding</text>
-        <rect x="520" y="224" width="174" height="74" rx="8" fill="#F4F4F1"/>
-        <text x="530" y="244" font-size="12.5" font-weight="700" fill="#17181C">Event log</text>
-        <text x="530" y="264" font-size="10.5" fill="#45474F">5:26 mechanic uses screwdriver</text>
-        <text x="530" y="282" font-size="10.5" fill="#45474F">5:30 mechanic tightens screw</text>
-        <line x1="706" y1="160" x2="738" y2="160" stroke="#73757E" stroke-width="1.6" marker-end="url(#ar)"/>
-        <!-- reader -->
-        <rect x="742" y="40" width="146" height="270" rx="14" fill="#EEF3FB" stroke="#3F6FB6"/>
-        <text x="815" y="64" font-size="14" font-weight="700" text-anchor="middle" fill="#17181C">Question at T</text>
-        <text x="815" y="84" font-size="12" text-anchor="middle" fill="#45474F">reader input ≤ B</text>
-        <g font-size="12.5" fill="#17181C">
-          <rect x="756" y="98" width="118" height="30" rx="6" fill="#D9A21B" opacity=".85"/><text x="815" y="118" text-anchor="middle">1  memory text</text>
-          <rect x="756" y="134" width="118" height="30" rx="6" fill="#E6C46A"/><text x="815" y="154" text-anchor="middle">2  object crops</text>
-          <rect x="756" y="170" width="118" height="30" rx="6" fill="#3F6FB6"/><text x="815" y="190" text-anchor="middle" fill="#fff">3  recent frames</text>
-        </g>
-        <rect x="756" y="222" width="118" height="34" rx="8" fill="#17181C"/>
-        <text x="815" y="244" font-size="13" text-anchor="middle" fill="#fff" font-weight="600">Frozen reader</text>
-        <text x="815" y="284" font-size="13" text-anchor="middle" fill="#2E8B4F" font-weight="700">A. screwdriver</text>
-      </svg>
-    </div>
-    <p class="caption"><b>Overview.</b> Before any question, a frozen writer describes each clip. Relational consolidation keeps one persistent node per object, and the captions form the event log. When a question arrives, a frozen reader answers from memory text, object crops and recent frames within a fixed token budget.</p>
-
-    <div class="steps">
-      <div class="step">
-        <div class="no">1</div>
-        <div>
-          <h4>Writing</h4>
-          <p>Every \(\Delta\) seconds the writer reads the clip \(C_k\) of the last five frames at 1 fps and returns scene-graph triplets, a one-sentence caption and short object descriptions. It never sees a question or a future frame. Each described object is localized with OWLv2 and its crop is stored with the node.</p>
-          <div class="eq">\[(G_k,\; e_k,\; \mathcal{D}_k) = \mathrm{writer}(C_k)\]</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="no">2</div>
-        <div>
-          <h4>Relational consolidation</h4>
-          <p>A mention is described by the relations it takes part in: the mean embedding of its triplets in this write. It is compared with the stored nodes of the same label class and merged into the best match if the similarity exceeds \(\theta = 0.55\); otherwise a new node is created. A matched node keeps a running mean of its contexts, and new descriptions and crops are appended to its history.</p>
-          <div class="eq">\[\mathbf{r}_k(\ell) = \frac{1}{|G_k(\ell)|}\sum_{(s,p,o)\in G_k(\ell)} \phi(s,p,o), \qquad \mathrm{resolve}_k(\ell) = \begin{cases} v^\star & \cos\!\big(\mathbf{r}_k(\ell), \bar{\mathbf{r}}_{v^\star}\big) > \theta \\ v_{\text{new}} & \text{otherwise} \end{cases}\]</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="no">3</div>
-        <div>
-          <h4>Reading under a fixed budget</h4>
-          <p>Nodes are ranked by the CLIP similarity between the question and their label with the latest description. The top nodes are serialized with their first and two latest descriptions, together with the event log. Crops of the highest-ranked nodes come next, and the remaining tokens go to frames: the most recent seconds first, then key frames from the times the retrieved nodes were last seen.</p>
-          <div class="eq">\[n_f = \max\!\Big(0,\; \min\!\Big(n_{\max},\; \Big\lfloor \tfrac{B - |\sigma_T| - |q| - n_c\kappa_c}{\kappa_f} \Big\rfloor\Big)\Big)\]</div>
-        </div>
-      </div>
-    </div>
   </div>
-</section>
-
-<section id="video">
-  <div class="wrap">
-    <h2>Video</h2>
-    <div class="fig">
-      <video controls muted playsinline preload="none" poster="static/images/poster.jpg">
-        <source src="static/video/vsg_memory.mp4" type="video/mp4">
-      </video>
-    </div>
-    <p class="caption"><b>Writing, matching and reading on one stream.</b> The writer turns each clip into triplets, object descriptions and one caption; repeated observations are merged into one node (×n counts them). The question arrives at 6:49, and the caption that supports the answer was written at 5:30.</p>
+  <div class="wide">
+    <figure class="figure">
+      <img src="static/images/vsg_method.png" alt="VSG overview: a causal writer produces triplets, object descriptions and captions; relational consolidation merges repeated mentions into persistent nodes with state histories and an event log; a VLM reader answers within a fixed token budget. Proactive mode writes an instruction-guided memory and checks a trigger every second.">
+    </figure>
   </div>
-</section>
-
-<section id="budget">
   <div class="wrap">
-    <h2>Where the budget goes</h2>
-    <div class="prose"><p>Memory text and crops are placed first, and frames fill what is left. Move the sliders to see how the reader input is split under the reference budget \(B = 3{,}510\) tokens (one frame \(\approx 195\) tokens, one crop \(\approx 216\)).</p></div>
+    <figure class="figure" style="margin:0">
+      <figcaption><b>Reactive</b> (top): before any question, a frozen writer describes each clip; relational consolidation keeps one persistent node per object, and captions form the event log. The frozen reader answers from memory text, object crops and recent frames within budget tokens. <b>Proactive</b> (bottom): a per-instruction memory is written every second and checked by a yes/no trigger.</figcaption>
+    </figure>
+
+    <h3>Relational consolidation</h3>
+    <p class="muted">A mention is represented by the relations it takes part in. It is matched only against stored nodes of the same label class, and merged when the relational similarity exceeds \(\theta = 0.55\).</p>
+    <div class="eq">\[\mathbf{r}_k(\ell) = \frac{1}{|G_k(\ell)|}\sum_{(s,p,o)\in G_k(\ell)} \phi(s,p,o), \qquad \mathrm{resolve}_k(\ell) = \begin{cases} v^\star & \cos\!\big(\mathbf{r}_k(\ell), \bar{\mathbf{r}}_{v^\star}\big) > \theta \\ v_{\text{new}} & \text{otherwise} \end{cases}\]</div>
+
+    <h3>Budgeted reading</h3>
+    <p class="muted">Memory text is placed first, object crops second, and the remaining tokens go to frames. Try it with the reference budget \(B = 3{,}510\) (a frame costs about 195 tokens, a crop about 216).</p>
+    <div class="eq">\[n_f = \max\!\Big(0,\; \min\!\Big(n_{\max},\; \Big\lfloor \tfrac{B - |\sigma_T| - |q| - n_c\kappa_c}{\kappa_f} \Big\rfloor\Big)\Big)\]</div>
     <div class="budget">
       <div class="ctrl"><label for="txt">Memory text (tokens)</label><input id="txt" type="range" min="0" max="2400" step="10" value="970"><output id="txtv">970</output></div>
       <div class="ctrl"><label for="crp">Object crops</label><input id="crp" type="range" min="0" max="2" step="1" value="2"><output id="crpv">2</output></div>
       <div class="bar" aria-hidden="true"><div class="t" id="bt"></div><div class="c" id="bc"></div><div class="f" id="bf"></div></div>
       <div class="key"><span><i style="background:var(--vsg)"></i>memory text</span><span><i style="background:#E6C46A"></i>crops</span><span><i style="background:var(--recent)"></i>frames</span></div>
       <div class="readout" id="out"></div>
-      <div class="frames" id="fr" aria-hidden="true"></div>
-      <div class="key"><span><i style="background:var(--recent)"></i>recent seconds (up to 8)</span><span><i style="background:var(--ink-3)"></i>key frames from the past</span></div>
-      <p class="note">Estimate from Eq. (11) with \(n_{\max} = 18\). At run time the input is counted with the reader's tokenizer and frames are removed until it fits.</p>
     </div>
   </div>
 </section>
 
-<section id="example">
-  <div class="wrap">
-    <h2>One stream, end to end</h2>
-    <div class="prose"><p>The example in the video: an egocentric repair video of 6:49, with the question <i>“What tool did I use to tighten the screw?”</i> asked at the end.</p></div>
-    <div class="ex">
-      <div class="stat"><b>362</b><span>object mentions written</span></div>
-      <div class="stat"><b>98</b><span>persistent nodes</span></div>
-      <div class="stat"><b>40</b><span>event lines</span></div>
-      <div class="stat"><b>3,456</b><span>reader tokens (B = 3,510)</span></div>
-    </div>
-    <div class="timeline">
-      <div class="tl" id="tl" aria-hidden="true"><div class="line"></div></div>
-      <div class="lines">
-        <div class="dis"><code>2:50</code>“Mechanic in blue gloves uses wrench to tighten bolt under car …”</div>
-        <div class="ev"><code>5:30</code>“Mechanic in blue gloves uses screwdriver on motorcycle under repair …”</div>
-        <div><code>6:49</code>Question. A recent-frame window (last 18 s) does not reach 5:30. VSG reads all 40 event lines, 2 crops and the last 8 frames, and answers <b>A. screwdriver</b>.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="results">
-  <div class="wrap">
-    <h2>Results</h2>
-    <!-- Add the main tables here once the numbers are final. -->
-    <div class="prose"><p style="text-align:center;color:var(--ink-3)">Results on OVO-Bench, StreamingBench, OmniPro and InteractionBench will be added with the paper.</p></div>
-  </div>
-</section>
+<!-- Results: add the main tables once the numbers are final. -->
 
 <section id="code">
   <div class="wrap">
     <h2>Code</h2>
-    <div class="prose"><p>The implementation follows the paper: a writer that builds the memory once per video, and a reader that answers any number of questions from it. Writer and reader are frozen Hugging Face models; nothing is trained.</p></div>
-    <pre><span class="c"># install</span>
-git clone https://github.com/ailarmhz/VSG.git &amp;&amp; cd VSG
-pip install -r requirements.txt
-
-<span class="c"># 1. write the memory of a video (question-agnostic, once per video)</span>
-python scripts/write_memory.py --video clip.mp4 --out memory/clip
-
-<span class="c"># 2. answer a question at time T under the 3,510-token budget</span>
-python scripts/answer.py --video clip.mp4 --memory memory/clip --time 409 \
-    --question "What tool did I use to tighten the screw?" \
-    --options "A. screwdriver" "B. hammer" "C. pliers" "D. wrench"</pre>
+    <p>The memory is written once per video and can be read by any number of questions and readers. Both models are frozen.</p>
     <div class="cols">
+      <pre><span class="c"># install</span>
+git clone https://github.com/ailarmhz/VSG.git
+cd VSG &amp;&amp; pip install -r requirements.txt
+
+<span class="c"># write the memory (no question)</span>
+python scripts/write_memory.py \
+    --video clip.mp4 --out memory/clip
+
+<span class="c"># answer at T = 409 s, B = 3,510 tokens</span>
+python scripts/answer.py --video clip.mp4 \
+    --memory memory/clip --time 409 \
+    --question "What tool did I use to tighten the screw?" \
+    --options "A. screwdriver" "B. hammer" \
+              "C. pliers" "D. wrench"</pre>
       <pre class="tree">vsg/
-  memory.py      graph, consolidation (Eq. 6–9), write log
-  writer.py      reactive writer (Sec. 3.3)
-  reader.py      retrieval and budget (Sec. 3.4)
-  proactive.py   instruction-conditioned mode (Sec. 3.5)
+  memory.py      graph, consolidation, write log
+  writer.py      question-agnostic writer
+  reader.py      retrieval and budgeted reading
+  proactive.py   instruction-guided memory, trigger
   grounding.py   OWLv2 boxes and crops
   prompts.py     writer and reader prompts
-  labels.py      synonym map for label classes</pre>
-      <pre class="tree"><span style="color:var(--ink-3)"># the same in Python</span>
-from vsg import Memory, Reader, ClipText, Writer
-from vsg.vlm import VLM
-from vsg.video import Video
-from vsg.grounding import Grounder
-
-vlm = VLM("Qwen/Qwen3-VL-8B-Instruct")
-video = Video("clip.mp4")
-Writer(vlm, Grounder()).run(video, "memory/clip")
-reader = Reader(vlm, ClipText(), budget=3510)
-pred, info = reader.answer(Memory("memory/clip"), video,
-                           question, options, T=409)</pre>
+  labels.py      label classes
+scripts/
+  write_memory.py
+  answer.py</pre>
     </div>
   </div>
 </section>
@@ -463,7 +284,6 @@ pred, info = reader.answer(Memory("memory/clip"), video,
 
 <script>
 (function(){
-  // budget explorer: Eq. (11) with the reference constants of the paper
   const B=3510, KF=195, KC=216, NMAX=18, W=8;
   const txt=document.getElementById('txt'), crp=document.getElementById('crp');
   function draw(){
@@ -471,25 +291,14 @@ pred, info = reader.answer(Memory("memory/clip"), video,
     document.getElementById('txtv').textContent=t;
     document.getElementById('crpv').textContent=c;
     const nf=Math.max(0,Math.min(NMAX,Math.floor((B-t-c*KC)/KF)));
-    const ft=nf*KF, ct=c*KC, used=t+ct+ft;
     const pct=v=>(100*v/B).toFixed(2)+'%';
     document.getElementById('bt').style.width=pct(t);
-    document.getElementById('bc').style.width=pct(ct);
-    document.getElementById('bf').style.width=pct(ft);
+    document.getElementById('bc').style.width=pct(c*KC);
+    document.getElementById('bf').style.width=pct(nf*KF);
     const rec=Math.min(W,nf), key=nf-rec;
-    document.getElementById('out').innerHTML='Frames: <b>'+nf+'</b> ('+rec+' recent'+(key?', '+key+' key':'')+')  ·  estimated input <b>'+used.toLocaleString()+'</b> of '+B.toLocaleString()+' tokens';
-    const fr=document.getElementById('fr'); fr.innerHTML='';
-    for(let i=0;i<key;i++){const s=document.createElement('span');s.className='key';fr.appendChild(s);}
-    for(let i=0;i<rec;i++){fr.appendChild(document.createElement('span'));}
+    document.getElementById('out').innerHTML='<b>'+nf+'</b> frames: '+rec+' recent'+(key?' and '+key+' from earlier key moments':'')+' · <b>'+(t+c*KC+nf*KF).toLocaleString()+'</b> of '+B.toLocaleString()+' tokens';
   }
   txt.addEventListener('input',draw); crp.addEventListener('input',draw); draw();
-
-  // timeline of the example stream (409 s, one event line every 10 s)
-  const T=409, tl=document.getElementById('tl'), X=v=>(100*v/T)+'%';
-  const win=document.createElement('div'); win.className='win'; win.style.left=X(T-18); win.style.width=(100*18/T)+'%'; tl.appendChild(win);
-  for(let t=10;t<=400;t+=10){const d=document.createElement('div');d.className='tick'+(t===330?' ev':t===170?' dis':'');d.style.left=X(t);tl.appendChild(d);}
-  const q=document.createElement('div'); q.className='q'; q.textContent='?'; q.style.left=X(T); tl.appendChild(q);
-
   document.getElementById('copy').addEventListener('click',function(){
     navigator.clipboard.writeText(document.getElementById('bibtext').textContent).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1500);});
   });
