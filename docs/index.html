@@ -43,7 +43,29 @@ h1 .name{color:var(--accent);font-weight:700}
 .btn .tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 
 /* teaser */
-.teaser{margin-top:40px;border:1px solid var(--rule);border-radius:18px;padding:20px 22px 16px;background:var(--paper);text-align:left}
+.teaser{position:relative;margin-top:40px;border:1px solid var(--rule);border-radius:18px;padding:18px 22px 16px;background:var(--paper);text-align:left}
+.t-cap{display:flex;align-items:baseline;gap:14px;min-height:34px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.t-cap b{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
+.t-cap span{font-size:19px;line-height:1.35;color:var(--ink)}
+.teaser:not(.focus) .t-cap b{color:var(--ink-3)}
+.teaser:not(.focus) .t-cap span{color:var(--ink-2);font-size:16px}
+.obox{position:absolute;border:3px solid #FFD400;border-radius:3px;box-shadow:0 0 0 2px rgba(0,0,0,.25)}
+.obox span{position:absolute;left:-3px;bottom:100%;margin-bottom:4px;background:#FFD400;color:#111;font-size:12.5px;font-weight:700;padding:1px 6px;border-radius:4px;white-space:nowrap;transition:opacity .2s}
+.frame.hl{box-shadow:0 0 0 4px #E8A800}
+.meters.hl{outline:3px solid #E8A800;outline-offset:6px;border-radius:6px}
+.gpane{position:relative}
+.card{position:absolute;left:0;right:0;bottom:30px;z-index:3;background:#fff;border:1.5px solid var(--merged);border-radius:12px;padding:10px 12px;box-shadow:0 8px 24px rgba(20,20,30,.12);font-size:13.5px;line-height:1.35}
+.card b{display:block;font-size:13.5px;margin-bottom:6px}
+.hrow{display:grid;grid-template-columns:44px 40px minmax(0,1fr);align-items:center;gap:8px;margin-top:6px;animation:rowin .35s ease}
+.hrow img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid var(--merged)}
+.hrow .nocrop{width:44px;height:44px;border-radius:50%;border:2px dashed var(--idle);font-size:10px;color:var(--ink-3);display:grid;place-items:center;text-align:center;line-height:1.1}
+.hrow code{font-family:var(--mono);font-weight:600;color:var(--merged)}
+@keyframes rowin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fly{position:absolute;z-index:5;width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid #FFD400;box-shadow:0 6px 18px rgba(0,0,0,.25);pointer-events:none}
+.log .ln.hl{background:#FFF1C2;outline:2px solid #E8A800;border-radius:4px;padding:0 4px}
+.twin{position:absolute;top:0;bottom:0;background:rgba(63,111,182,.35);border-radius:4px}
+.tgap{position:absolute;top:-9px;height:4px;background:var(--ok);border-radius:2px}
+.tgap span{position:absolute;right:30%;bottom:6px;font-size:12.5px;font-weight:700;color:var(--ok);background:var(--paper);padding:0 4px;transition:opacity .2s}
 .t-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.25fr) minmax(0,.7fr);gap:24px}
 .pane,.side{min-width:0}
 .pane-head{display:flex;flex-direction:column;gap:1px;margin-bottom:8px}
@@ -125,6 +147,8 @@ footer{padding:56px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
 @media (max-width:900px){
   .t-grid{grid-template-columns:minmax(0,1fr)}
   .teaser{padding:12px}
+  .t-cap{flex-direction:column;gap:2px}
+  .t-cap span{font-size:16px}
   .side{border-left:none;padding-left:0}
   .tlabels span.e{display:none}
   .cols{grid-template-columns:minmax(0,1fr)}
@@ -148,31 +172,35 @@ footer{padding:56px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
 
   <div class="wide">
     <div class="teaser" id="teaser" aria-label="The visual-state graph of one stream, write by write">
+      <div class="t-cap"><b id="ttitle">Writing</b><span id="tline">&nbsp;</span></div>
       <div class="t-grid">
         <div class="pane">
           <div class="pane-head"><b>Video stream</b><span>The writer reads the last clip every 10 s, before any question exists.</span></div>
-          <div class="frame">
+          <div class="frame" id="tframewrap">
             <img id="tframe" alt="Video frame at the current write" src="static/teaser/f010.jpg">
+            <div class="obox" id="tbox" hidden><span id="tboxlab"></span></div>
             <span class="badge" id="ttime">0:10</span>
             <span class="badge write" id="twrite">memory write</span>
             <div class="qcard" id="tq" hidden>
               <b>Question at 6:49</b>
               <span>What tool did I use to tighten the screw?</span>
-              <em>A. screwdriver ✓</em>
+              <em id="tqa" hidden>VSG: A. screwdriver ✓</em>
             </div>
           </div>
           <div class="log" id="tlog" aria-live="polite"></div>
         </div>
-        <div class="pane">
+        <div class="pane gpane">
+          <div class="card" id="tcard" hidden></div>
           <div class="pane-head"><b>Visual-state graph</b><span id="tstats">&nbsp;</span></div>
           <svg id="tgraph" viewBox="0 0 520 400" role="img" aria-label="Object nodes with their crops, merged observation counts and relations"></svg>
           <div class="legend"><span><i style="border-color:var(--new)"></i>created at this write</span><span><i style="border-color:var(--merged)"></i>merged</span><span><i style="border-color:var(--idle)"></i>not seen now</span></div>
         </div>
         <div class="side">
           <div class="pane-head"><b>Reader input if asked now</b><span>Tokens per question</span></div>
+          <div id="tmeters" class="meters">
           <div class="meter"><div class="row"><span>Every frame so far (1 fps)</span><b id="vfull">0</b></div><div class="track"><div class="fill" id="bfull" style="background:#7A7A7A"></div></div></div>
           <div class="meter"><div class="row"><span>VSG</span><b>≤ 3.5K</b></div><div class="track"><div class="fill" id="bvsg" style="background:var(--vsg)"></div></div></div>
-          <p class="t-note" id="tnote"></p>
+          </div>
         </div>
       </div>
       <div class="t-foot">
@@ -180,11 +208,14 @@ footer{padding:56px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
         <div class="tline">
           <div class="tbar" id="tbar" role="slider" tabindex="0" aria-label="Stream time: drag or use the arrow keys to move between writes">
             <div class="tfill" id="tfill"></div><div class="tticks" id="tticks"></div><div class="tknob" id="tknob"></div>
+            <div class="twin" id="twin" hidden></div>
+            <div class="tgap" id="tgap" hidden><span>79 s</span></div>
             <span class="tq">?</span>
           </div>
           <div class="tlabels"><span>0:00</span><span class="d">2:50 wrench</span><span class="e">5:30 screwdriver</span><span>6:49 question</span></div>
         </div>
       </div>
+      <img class="fly" id="tfly" alt="" hidden>
     </div>
   </div>
 </header>
