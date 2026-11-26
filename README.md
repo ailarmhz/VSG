@@ -1,6 +1,6 @@
 # VSG: Visual-State Graph Memory for Streaming Video Understanding
 
-[Project page](https://ailarmhz.github.io/VSG/) · arXiv (soon)
+[Project page](https://ailarmhz.github.io/VSG/) · [arXiv](https://arxiv.org/abs/2611.32369)
 
 ![VSG overview](docs/static/images/vsg_method.png)
 
@@ -69,11 +69,4 @@ python -m pytest tests
 
 ## Citation
 
-```bibtex
-@inproceedings{vsg2027,
-  title     = {Visual-State Graph Memory for Streaming Video Understanding},
-  author    = {Anonymous},
-  booktitle = {Under review},
-  year      = {2027}
-}
-```
+Please cite the [arXiv paper](https://arxiv.org/abs/2611.32369).

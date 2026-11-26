@@ -34,13 +34,10 @@ img{max-width:100%;height:auto;display:block}
 .hero{padding-block:clamp(44px,7vw,76px) 0;text-align:center}
 h1{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0 auto;line-height:1.14;font-size:clamp(30px,4.4vw,46px);max-width:900px;text-wrap:balance}
 h1 .name{color:var(--accent);font-weight:700}
-.authors{margin-top:20px;font-size:18px;color:var(--ink-2)}
-.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:22px}
+.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px}
 .btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:15.5px;text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:#fff}
 .btn:hover{opacity:.86}
 .btn i{font-size:17px}
-.btn.soon{background:transparent;color:var(--ink-3);border:1px dashed #D0D0D0;cursor:default}
-.btn .tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 
 /* teaser */
 .teaser{position:relative;margin-top:40px;border:1px solid var(--rule);border-radius:18px;padding:18px 22px 16px;background:var(--paper);text-align:left}
@@ -140,8 +137,6 @@ pre{background:#16171B;color:#ECECEA;border-radius:12px;padding:16px 18px;overfl
 pre .c{color:#8C8F98}
 pre.tree{background:var(--paper);color:var(--ink);border:1px solid var(--rule)}
 .cols{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
-.bib{position:relative}
-.copy{position:absolute;top:10px;right:10px;border:1px solid #3a3c44;background:#24262c;color:#ddd;border-radius:8px;font-size:13px;padding:4px 10px;cursor:pointer}
 footer{padding:56px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
 
 @media (max-width:900px){
@@ -162,10 +157,8 @@ footer{padding:56px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
 <header class="hero">
   <div class="wrap">
     <h1><span class="name">VSG</span>: Visual-State Graph Memory for Streaming Video Understanding</h1>
-    <!-- Author list and venue: add after review. -->
-    <div class="authors">Anonymous authors</div>
     <div class="buttons">
-      <a class="btn soon" aria-disabled="true"><i class="ai ai-arxiv" aria-hidden="true"></i>arXiv <span class="tag">soon</span></a>
+      <a class="btn" href="https://arxiv.org/abs/2611.32369" target="_blank" rel="noopener"><i class="ai ai-arxiv" aria-hidden="true"></i>arXiv</a>
       <a class="btn" href="https://github.com/ailarmhz/VSG" target="_blank" rel="noopener"><i class="fa-brands fa-github" aria-hidden="true"></i>Code</a>
     </div>
   </div>
@@ -293,20 +286,6 @@ scripts/
   </div>
 </section>
 
-<section id="bibtex">
-  <div class="wrap">
-    <h2>BibTeX</h2>
-    <div class="bib">
-      <button class="copy" id="copy" type="button">Copy</button>
-<pre id="bibtext">@inproceedings{vsg2027,
-  title     = {Visual-State Graph Memory for Streaming Video Understanding},
-  author    = {Anonymous},
-  booktitle = {Under review},
-  year      = {2027}
-}</pre>
-    </div>
-  </div>
-</section>
 
 <footer>
   <div class="wrap">Page content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</div>
@@ -329,9 +308,6 @@ scripts/
     document.getElementById('out').innerHTML='<b>'+nf+'</b> frames: '+rec+' recent'+(key?' and '+key+' from earlier key moments':'')+' · <b>'+(t+c*KC+nf*KF).toLocaleString()+'</b> of '+B.toLocaleString()+' tokens';
   }
   txt.addEventListener('input',draw); crp.addEventListener('input',draw); draw();
-  document.getElementById('copy').addEventListener('click',function(){
-    navigator.clipboard.writeText(document.getElementById('bibtext').textContent).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1500);});
-  });
 })();
 </script>
 <script src="static/js/teaser.js" defer></script>
