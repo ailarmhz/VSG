@@ -16,7 +16,7 @@
 <style>
 :root{
   color-scheme:light;
-  --bg:#FFFFFF;--paper:#FBFAF7;--surface-2:#F2F1EC;--ink:#17181C;--ink-2:#45474F;--ink-3:#74767E;--rule:#E4E2DB;
+  --bg:#FFFFFF;--paper:#FFFFFF;--surface-2:#EFEFEF;--ink:#17181C;--ink-2:#45474F;--ink-3:#74767E;--rule:#E6E6E6;
   --accent:#B7830F;--vsg:#D9A21B;--new:#2E9E5B;--merged:#3F78D0;--idle:#B9B9B5;--recent:#3F6FB6;--wrong:#C0392B;--ok:#2E8B4F;
   --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
   --sans:"Noto Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -39,16 +39,16 @@ h1 .name{color:var(--accent);font-weight:700}
 .btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:15.5px;text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:#fff}
 .btn:hover{opacity:.86}
 .btn i{font-size:17px}
-.btn.soon{background:transparent;color:var(--ink-3);border:1px dashed #CFCDC5;cursor:default}
+.btn.soon{background:transparent;color:var(--ink-3);border:1px dashed #D0D0D0;cursor:default}
 .btn .tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 
 /* teaser */
 .teaser{position:relative;margin-top:40px;border:1px solid var(--rule);border-radius:18px;padding:18px 22px 16px;background:var(--paper);text-align:left}
 .t-cap{display:flex;align-items:baseline;gap:14px;min-height:34px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
-.t-cap b{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
-.t-cap span{font-size:19px;line-height:1.35;color:var(--ink)}
+.t-cap b{font-size:16px;font-weight:700;color:#C99400;white-space:nowrap}
+.t-cap span{font-size:20px;line-height:1.35;color:var(--ink)}
 .teaser:not(.focus) .t-cap b{color:var(--ink-3)}
-.teaser:not(.focus) .t-cap span{color:var(--ink-2);font-size:16px}
+.teaser:not(.focus) .t-cap span{color:var(--ink-3);font-size:17px}
 .obox{position:absolute;border:3px solid #FFD400;border-radius:3px;box-shadow:0 0 0 2px rgba(0,0,0,.25)}
 .obox span{position:absolute;left:-3px;bottom:100%;margin-bottom:4px;background:#FFD400;color:#111;font-size:12.5px;font-weight:700;padding:1px 6px;border-radius:4px;white-space:nowrap;transition:opacity .2s}
 .frame.hl{box-shadow:0 0 0 4px #E8A800}
@@ -69,7 +69,7 @@ h1 .name{color:var(--accent);font-weight:700}
 .t-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.25fr) minmax(0,.7fr);gap:24px}
 .pane,.side{min-width:0}
 .pane-head{display:flex;flex-direction:column;gap:1px;margin-bottom:8px}
-.pane-head b{font-size:15.5px}
+.pane-head b{font-size:15.5px;color:var(--ink)}
 .pane-head span{font-size:13.5px;color:var(--ink-3);line-height:1.35}
 .frame{position:relative;border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9}
 .frame img{width:100%;height:100%;object-fit:cover}
@@ -93,14 +93,14 @@ h1 .name{color:var(--accent);font-weight:700}
 .meter .track{height:9px;border-radius:99px;background:var(--surface-2);margin-top:5px;overflow:hidden}
 .meter .fill{height:100%;width:0;border-radius:99px}
 .t-note{font-size:14.5px;color:var(--ink);margin:18px 0 0;line-height:1.45}
-.t-foot{display:flex;align-items:flex-start;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+.t-foot{margin-top:14px;padding-top:6px}
 .iconbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;flex:none}
 .tline{flex:1;min-width:0}
-.tbar{position:relative;height:16px;margin-top:10px;border-radius:99px;background:var(--surface-2);cursor:pointer;touch-action:none}
-.tfill{position:absolute;left:0;top:0;bottom:0;background:#D8D6CF;border-radius:99px}
-.tticks i{position:absolute;top:3px;width:1.5px;height:10px;background:#9A9A96}
+.tbar{position:relative;height:12px;margin-top:12px;border-radius:99px;background:var(--surface-2)}
+.tfill{position:absolute;left:0;top:0;bottom:0;background:#D2D2D2;border-radius:99px}
+.tticks i{position:absolute;top:1px;width:1.5px;height:10px;background:#9A9A9A}
 .tticks i.ev{background:var(--ok);width:4px}.tticks i.dis{background:var(--wrong);width:4px}
-.tknob{position:absolute;top:-4px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tknob{position:absolute;top:-3px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .tbar .tq{position:absolute;right:-12px;top:-5px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
 .tlabels{position:relative;height:20px;font-size:12.5px;color:var(--ink-3);margin-top:6px}
 .tlabels span{position:absolute;white-space:nowrap}
@@ -204,9 +204,8 @@ footer{padding:56px 0 48px;text-align:center;color:var(--ink-3);font-size:14px}
         </div>
       </div>
       <div class="t-foot">
-        <button class="iconbtn" id="tplay" type="button" aria-label="Play"><i class="fa-solid fa-play"></i></button>
         <div class="tline">
-          <div class="tbar" id="tbar" role="slider" tabindex="0" aria-label="Stream time: drag or use the arrow keys to move between writes">
+          <div class="tbar" id="tbar" aria-hidden="true">
             <div class="tfill" id="tfill"></div><div class="tticks" id="tticks"></div><div class="tknob" id="tknob"></div>
             <div class="twin" id="twin" hidden></div>
             <div class="tgap" id="tgap" hidden><span>79 s</span></div>

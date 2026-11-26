@@ -12,7 +12,7 @@
                workbench_0: 'below', blue_gloves_0: 'below'};
   const VW = 520, VH = 400, R = 33;
   const xy = (n) => [40 + POS[n][0] * (VW - 80), 330 - (POS[n][1] - 0.10) / 0.60 * 262];
-  const FAST = 0.75;                          // seconds per ordinary write
+  const FAST = 0.55;                          // seconds per ordinary write
   const mmss = (t) => Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
   const ease = (u) => { u = Math.min(1, Math.max(0, u)); return u * u * (3 - 2 * u); };
   const lerp = (a, b, u) => a + (b - a) * u;
@@ -24,47 +24,47 @@
   // ---------------------------------------------------------------- scenes at the key writes
   const SCENES = {
     10: [
-      {dur: 2.4, title: 'Writing', line: 'Every 10 s a frozen writer reads the last clip of 5 frames. No question is known.',
+      {dur: 2.2, title: 'Writing', line: 'Every 10 s a frozen writer reads the last clip of 5 frames. No question is known.',
        fx: (u) => ({frameHl: 1, build: 0})},
-      {dur: 4.2, title: 'Writing', line: 'It writes triplets. Each object becomes a node, each relation an edge.',
+      {dur: 4.6, title: 'Writing', line: 'It writes triplets. Each object becomes a node, each relation an edge.',
        fx: (u) => ({build: u})},
       {dur: 2.6, title: 'Writing', line: 'It also writes one caption, which starts the event log.',
        fx: (u) => ({logHl: 10})},
     ],
     20: [
-      {dur: 2.6, title: 'Relational matching', line: '0:20: the screwdriver is mentioned again. Same object, or a new one?',
+      {dur: 2.4, title: 'Relational matching', line: '0:20: the screwdriver is mentioned again. Same object, or a new one?',
        fx: (u) => ({base: -1, zoom: ['screwdriver_0', u], ghost: {a: ease(u / 0.5), slide: 0}, dimExcept: ['screwdriver_0', 'person_0', 'workbench_0']})},
       {dur: 3.0, title: 'Relational matching', line: 'Its relations match the stored node: held by the person, on the workbench.',
        fx: (u) => ({base: -1, zoom: ['screwdriver_0', 1], ghost: {a: 1, slide: 0, edges: ease(u / 0.6)},
                      greenEdges: [['person_0', 'screwdriver_0'], ['screwdriver_0', 'workbench_0']], dimExcept: ['screwdriver_0', 'person_0', 'workbench_0']})},
-      {dur: 3.0, title: 'Relational matching', line: 'Similarity above θ = 0.55, so the mention updates the stored node: screwdriver ×2.',
+      {dur: 2.8, title: 'Relational matching', line: 'Similarity above θ = 0.55, so the mention updates the stored node: screwdriver ×2.',
        fx: (u) => (u < 0.4 ? {base: -1, zoom: ['screwdriver_0', 1], ghost: {a: 1 - ease(u / 0.4) * 0.6, slide: ease(u / 0.4)}, dimExcept: ['screwdriver_0']}
                            : {zoom: ['screwdriver_0', 1 - ease((u - 0.75) / 0.25)], hl: ['screwdriver_0'], pulse: (u - 0.4) / 0.6})},
     ],
     170: [
-      {dur: 3.2, title: 'Event log', line: '2:50 caption: “… uses wrench to tighten bolt …”', fx: (u) => ({logHl: 170})},
-      {dur: 2.6, title: 'Event log', line: 'The wrench is used often in this video; its node has been seen ×13.',
+      {dur: 3.0, title: 'Event log', line: '2:50 caption: “… uses wrench to tighten bolt …”', fx: (u) => ({logHl: 170})},
+      {dur: 2.2, title: 'Event log', line: 'The wrench is used often in this video; its node has been seen ×13.',
        fx: (u) => ({zoom: ['wrench_0', u], hl: ['wrench_0'], dimExcept: ['wrench_0', 'person_0']})},
     ],
     250: [
-      {dur: 2.6, title: 'Grounding', line: 'OWLv2 localizes the described screwdriver in the current frame.', fx: (u) => ({box: u})},
-      {dur: 2.4, title: 'Grounding', line: 'Its crop is stored with the screwdriver node.',
+      {dur: 2.4, title: 'Grounding', line: 'OWLv2 localizes the described screwdriver in the current frame.', fx: (u) => ({box: u})},
+      {dur: 2.0, title: 'Grounding', line: 'Its crop is stored with the screwdriver node.',
        fx: (u) => ({box: 1, fly: u, zoom: ['screwdriver_0', u], hl: ['screwdriver_0'], dimExcept: ['screwdriver_0']})},
-      {dur: 5.0, title: 'State history', line: 'Descriptions are appended, not overwritten: the node keeps a history of its state.',
+      {dur: 4.6, title: 'State history', line: 'Descriptions are appended, not overwritten: the node keeps a history of its state.',
        fx: (u) => ({zoom: ['screwdriver_0', 1 - ease((u - 0.85) / 0.15)], card: u, dimExcept: ['screwdriver_0']})},
     ],
     330: [
       {dur: 3.2, title: 'The key moment', line: '5:30 caption: “… uses screwdriver on motorcycle …”', fx: (u) => ({logHl: 330})},
       {dur: 3.0, title: 'The key moment', line: 'Reading every frame so far would cost ≈64K tokens. VSG reads at most 3.5K.',
        fx: (u) => ({meterHl: 1, logHl: 330})},
-      {dur: 3.0, title: 'The key moment', line: 'It is written 79 s before a question that has not been asked yet.',
+      {dur: 3.2, title: 'The key moment', line: 'It is written 79 s before a question that has not been asked yet.',
        fx: (u) => ({logHl: 330, gap: u})},
     ],
   };
   const END = [
     {dur: 3.0, title: 'Question at 6:49', line: '“What tool did I use to tighten the screw?” A recent-frame window no longer reaches 5:30.', fx: (u) => ({end: 1, window: 1})},
-    {dur: 3.2, title: 'Question at 6:49', line: 'VSG reads its memory within 3,510 tokens; the event log includes the 5:30 line.', fx: (u) => ({end: 1, logHl: 330, dimLog: 1, gap: 1})},
-    {dur: 4.0, title: 'Answer', line: 'VSG answers A. screwdriver, correct.', fx: (u) => ({end: 1, answer: 1, logHl: 330, dimLog: 1, gap: 1})},
+    {dur: 3.0, title: 'Question at 6:49', line: 'VSG reads its memory within 3,510 tokens; the event log includes the 5:30 line.', fx: (u) => ({end: 1, logHl: 330, dimLog: 1, gap: 1})},
+    {dur: 4.5, title: 'Answer', line: 'VSG answers A. screwdriver, correct.', fx: (u) => ({end: 1, answer: 1, logHl: 330, dimLog: 1, gap: 1})},
   ];
 
   function buildSeq() {
@@ -87,7 +87,7 @@
   function setZoom(fx) {
     let vb = [0, 0, VW, VH];
     if (fx.zoom) {
-      const [x, y] = xy(fx.zoom[0]), z = ease(fx.zoom[1]), w = VW / 1.7, h = VH / 1.7;
+      const [x, y] = xy(fx.zoom[0]), z = ease(fx.zoom[1]), w = VW / 1.22, h = VH / 1.22;
       const cx = Math.min(Math.max(x, w / 2), VW - w / 2), cy = Math.min(Math.max(y + 20, h / 2), VH - h / 2);
       vb = [lerp(0, cx - w / 2, z), lerp(0, cy - h / 2, z), lerp(VW, w, z), lerp(VH, h, z)];
     }
@@ -130,7 +130,7 @@
       const g = green.has(ekey(e.s, e.o)), live = e.live && !fx.end;
       const faded = dim && !(dim.has(e.s) && dim.has(e.o));
       el('line', {x1: sx, y1: sy, x2: ex, y2: ey, stroke: g ? C.ok : live ? C.merged : '#C9C9C4', 'stroke-width': g ? 3.6 : live ? 2.6 : 1.4,
-                  opacity: faded ? 0.15 : 1, 'marker-end': f > 0.95 ? `url(#ah${g ? 'k' : live ? 'b' : 'g'})` : ''});
+                  opacity: faded ? 0.3 : 1, 'marker-end': f > 0.95 ? `url(#ah${g ? 'k' : live ? 'b' : 'g'})` : ''});
     });
     let lab = edges.filter((e) => (e.grow !== undefined ? e.grow > 0.6 : green.has(ekey(e.s, e.o))));
     if (!lab.length && !fx.end && !dim) {
@@ -154,7 +154,7 @@
       const grow = fx.build !== undefined && mine.length ? Math.max(...mine.map((e) => e.grow)) : 1;
       const isNew = prev && !prev.nodes[n] && fx.build === undefined;
       const s = fx.build !== undefined ? ease(grow / 0.4) : isNew && !still ? ease(u / 0.5) : 1;
-      const g = el('g', {transform: `translate(${x},${y}) scale(${Math.max(0.01, s)}) translate(${-x},${-y})`, opacity: dim && !dim.has(n) ? 0.2 : 1});
+      const g = el('g', {transform: `translate(${x},${y}) scale(${Math.max(0.01, s)}) translate(${-x},${-y})`, opacity: dim && !dim.has(n) ? 0.45 : 1});
       if (nd.img) el('image', {href: 'static/teaser/c_' + nd.img, x: x - R, y: y - R, width: 2 * R, height: 2 * R,
                                'clip-path': `url(#cp${n})`, preserveAspectRatio: 'xMidYMid slice'}, g);
       else el('circle', {cx: x, cy: y, r: R - 2, fill: '#ECECEA'}, g);
@@ -177,7 +177,7 @@
       }
     });
     if (fx.ghost) {                                     // a new mention, compared with the stored node (0:20)
-      const [nx, ny] = xy('screwdriver_0'), gx0 = nx + 105, gy0 = ny + 10;
+      const [nx, ny] = xy('screwdriver_0'), gx0 = nx - 72, gy0 = ny + 74;
       const gx = lerp(gx0, nx, fx.ghost.slide), gy = lerp(gy0, ny, fx.ghost.slide);
       const g = el('g', {opacity: fx.ghost.a});
       if (fx.ghost.edges) {
@@ -256,15 +256,29 @@
     $('tmeters').classList.toggle('hl', !!fx.meterHl);
   }
 
+  const loaded = new Set();
+  function preload(from) {                    // fetch the next frames just ahead of playback
+    for (let k = from; k <= Math.min(Math.floor(D.T), from + 24); k++) {
+      if (loaded.has(k)) continue;
+      loaded.add(k);
+      const im = new Image();
+      im.src = `static/teaser/fr/${String(k).padStart(3, '0')}.jpg`;
+    }
+  }
+
   function render() {
     const sg = seq[si], st = D.steps[sg.k], fx = sg.beat ? sg.beat.fx(u) : {};
     const base = fx.base === -1 ? D.steps[sg.k - 1] : st;
     const prev = fx.base === -1 ? null : (sg.k ? D.steps[sg.k - 1] : null);
     drawGraph(base, prev, sg.beat ? 1 : u, fx, !playing);
     const t = sg.end ? D.T : st.t;
-    $('tframe').src = `static/teaser/f${String(Math.floor(t)).padStart(3, '0')}.jpg`;
-    $('ttime').textContent = mmss(t);
-    $('twrite').hidden = !!sg.end;
+    const t0 = sg.k ? D.steps[sg.k - 1].t : 0;
+    const ft = sg.end ? D.T : sg.beat ? st.t : Math.round(lerp(t0, st.t, Math.min(1, u)));
+    const src = `static/teaser/fr/${String(Math.min(Math.floor(D.T), ft)).padStart(3, '0')}.jpg`;
+    if (!$('tframe').src.endsWith(src)) $('tframe').src = src;
+    preload(ft);
+    $('ttime').textContent = mmss(sg.beat || sg.end ? t : ft);
+    $('twrite').hidden = !!sg.end || (!sg.beat && u < 0.85);
     $('tq').hidden = !sg.end;
     $('tqa').hidden = !fx.answer;
     $('tstats').textContent = `${base.m} mentions → ${base.n} nodes · 6 shown`;
@@ -276,8 +290,9 @@
     $('bfull').style.width = (100 * Math.min(full, 80000) / 80000) + '%';
     $('vfull').textContent = '≈' + (full / 1000).toFixed(1) + 'K';
     $('bvsg').style.width = (100 * 3510 / 80000) + '%';
-    $('tknob').style.left = (100 * t / D.T) + '%';
-    $('tfill').style.width = (100 * t / D.T) + '%';
+    const tt = sg.beat || sg.end ? t : ft;
+    $('tknob').style.left = (100 * tt / D.T) + '%';
+    $('tfill').style.width = (100 * tt / D.T) + '%';
     drawOverlays(fx);
   }
 
@@ -292,25 +307,15 @@
   }
 
   function setPlaying(p) {
+    if (p === playing) return;
     playing = p;
-    $('tplay').setAttribute('aria-label', p ? 'Pause' : 'Play');
-    $('tplay').innerHTML = p ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
-    if (p) { last = performance.now(); requestAnimationFrame(tick); } else render();
-  }
-
-  function seek(clientX) {
-    const r = $('tbar').getBoundingClientRect(), t = Math.max(0, Math.min(1, (clientX - r.left) / r.width)) * D.T;
-    let best = 0;
-    seq.forEach((s, i) => { const ts = s.end ? D.T : D.steps[s.k].t; if (ts <= t + 1e-6 && (!s.beat || s.j === 0)) best = i; });
-    if (t > D.steps[D.steps.length - 1].t + 4) best = seq.length - 1;
-    si = best; u = seq[si].beat ? 0.6 : 1;
-    render();
+    if (p) { last = performance.now(); requestAnimationFrame(tick); }
   }
 
   fetch('static/teaser/data.json').then((r) => r.json()).then((data) => {
     D = data;
     buildSeq();
-    D.steps.forEach((s) => { const im = new Image(); im.src = `static/teaser/f${String(s.t).padStart(3, '0')}.jpg`; });
+    preload(0);
     const bar = $('tticks');
     D.steps.forEach((s) => {
       const d = document.createElement('i');
@@ -321,26 +326,16 @@
     });
     $('twin').style.left = (100 * (D.T - 18) / D.T) + '%';
     $('twin').style.width = (100 * 18 / D.T) + '%';
-    $('tplay').addEventListener('click', () => setPlaying(!playing));
-    let drag = false;
-    $('tbar').addEventListener('pointerdown', (e) => { drag = true; setPlaying(false); seek(e.clientX); });
-    window.addEventListener('pointermove', (e) => { if (drag) seek(e.clientX); });
-    window.addEventListener('pointerup', () => { drag = false; });
-    $('tbar').addEventListener('keydown', (e) => {
-      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-      setPlaying(false);
-      si = Math.max(0, Math.min(seq.length - 1, si + (e.key === 'ArrowRight' ? 1 : -1)));
-      u = seq[si].beat ? 0.6 : 1;
-      render();
-      e.preventDefault();
-    });
     si = 0; u = 0;
     render();
     root.go = (i, v) => { setPlaying(false); si = i; u = v; render(); };
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduce && 'IntersectionObserver' in window) {
-      const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { setPlaying(true); io.disconnect(); } }, {threshold: 0.35});
-      io.observe(root);
-    }
+    if (reduce) { si = seq.length - 1; u = 0.99; render(); return; }
+    let onScreen = false;
+    const go = () => setPlaying(onScreen && !document.hidden);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((es) => { onScreen = es[0].isIntersecting; go(); }, {threshold: 0.2}).observe(root);
+    } else { onScreen = true; go(); }
+    document.addEventListener('visibilitychange', go);
   });
 })();
